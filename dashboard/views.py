@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from .models import Product
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -76,6 +77,10 @@ def dashboard_view(request):
         # 其他變數...
     }
     return render(request, 'dashboard.html', context)
+
+def shopping_view(request):
+    products = ['Product 1', 'Product 2', 'Product 3']  # 假設這裡是您的產品數據
+    return render(request, 'shopping.html', {'products': products})
 
 @login_required
 def settings_view(request):
