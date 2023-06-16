@@ -302,3 +302,8 @@ def update_notification(request):
 def customer_view(request):
     customers = Customer.objects.all()
     return render(request, 'customer.html', {'customers': customers})
+
+def order_report(request):
+    orders = Order.objects.all()
+    context = {'orders': orders}
+    return render(request, 'report_m.html', context)
