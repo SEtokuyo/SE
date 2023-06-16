@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
-from .forms import ProfileForm, NotificationForm, RegistrationForm, OrderForm, ProductForm
+from .forms import ProfileForm, NotificationForm, RegistrationForm, OrderForm, ProductForm ,CustomerForm
 from datetime import datetime
 # Create your views here.
 
@@ -79,11 +79,9 @@ def signup_view(request):
             else:
                 form.save()
                 messages.success(request, '註冊成功！')
-                print(form.errors)
                 return redirect('home')
         else:
             messages.error(request, '註冊失敗。請檢查輸入內容。')
-            print(form.errors)
     else:
         form = RegistrationForm()
         print(form.errors)
@@ -208,6 +206,46 @@ def dashboard_view(request):
     }
     return render(request, 'dashboard.html', context)
 
+
+def customer_list(request):
+    customers = Customer.objects.all()
+    return render(request, 'customer_list.html', {'customers': customers})
+
+
+def customer_detail(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    return render(request, 'customer_detail.html', {'customer': customer})
+
+
+def customer_create(request):
+    if request.method == 'POST':
+        form = CustomerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('customer_list')
+    else:
+        form = CustomerForm()
+    return render(request, 'customer_create.html', {'form': form})
+
+
+def customer_edit(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    if request.method == 'POST':
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('customer_list')
+    else:
+        form = CustomerForm(instance=customer)
+    return render(request, 'customer_edit.html', {'form': form})
+
+
+def customer_delete(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    if request.method == 'POST':
+        customer.delete()
+        return redirect('customer_list')
+    return render(request, 'customer_delete.html', {'customer': customer})
 @login_required
 def settings_view(request):
     user = request.user
@@ -259,7 +297,8 @@ def update_notification(request):
     context = {
         'notification_form': notification_form,
     }
- 
+    return render(request, 'settings.html', context)
+
 def customer_view(request):
     customers = Customer.objects.all()
     return render(request, 'customer.html', {'customers': customers})

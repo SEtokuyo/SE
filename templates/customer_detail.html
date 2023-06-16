@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <h2>客戶詳細資料</h2>
+
+  <table class="table">
+    <tbody>
+      <tr>
+        <th>姓名:</th>
+        <td>{{ customer.name }}</td>
+      </tr>
+      <tr>
+        <th>聯絡電話:</th>
+        <td>{{ customer.contact_number }}</td>
+      </tr>
+      <tr>
+        <th>送貨地址:</th>
+        <td>{{ customer.address }}</td>
+      </tr>
+      <tr>
+        <th>Email:</th>
+        <td>{{ customer.email }}</td>
+      </tr>
+      <tr>
+        <th>使用者:</th>
+        <td>{{ customer.user.username }}</td>
+      </tr>
+      <tr>
+        <th>首次訪問日期:</th>
+        <td>{{ customer.first_visit_date }}</td>
+      </tr>
+      <tr>
+        <th>備註:</th>
+        <td>{{ customer.remarks }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <a href="{% url 'customer_list' %}" class="btn btn-primary">返回</a>
+</div>
+{% endblock %}
