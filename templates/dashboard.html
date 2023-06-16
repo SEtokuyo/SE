@@ -3,6 +3,9 @@
 {% block title %}儀表板 - 銷售管理系統{% endblock %}
 
 {% block content %}
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 <div class="row">
   <div class="col-lg-12">
     <div class="card">
@@ -19,7 +22,7 @@
   <div class="col-lg-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">各類產品收入占比</h3>
+        <h3 class="card-title">產品收入</h3>
       </div>
       <div class="card-body">
         <canvas id="salesPieChart"></canvas>
@@ -37,22 +40,36 @@
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-  // 呈現各類產品收入占比圓餅圖
-  function renderSalesPieChart(data) {
+function renderSalesPieChart(data) {
     var salesctx = document.getElementById('salesPieChart').getContext('2d');
     new Chart(salesctx, {
-      type: 'pie',
-      data: {
-        labels: data.labels,
-        datasets: [{
-          data: data.data,
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#32B3FB', 'FF98CD']
-        }]
-      }
+        type: 'pie',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                data: data.data,
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#32B3FB', 'FF98CD']
+            }]
+        },
+        options: {
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem, chartData) {
+                        var dataset = chartData.datasets[tooltipItem.datasetIndex];
+                        var total = dataset.data.reduce(function (previousValue, currentValue) {
+                            return previousValue + currentValue;
+                        });
+                        var currentValue = dataset.data[tooltipItem.index];
+                        var percentage = Math.floor((currentValue / total) * 100 + 0.5);
+                        return data.labels[tooltipItem.index] + ': ' + percentage + '%';
+                    }
+                }
+            }
+        }
     });
-  }
+}
 
   // 呈現產品庫存狀態圓餅圖
   function renderStockPieChart(data) {

@@ -51,14 +51,15 @@ class Product(models.Model):
 
     @classmethod
     def get_sales_chart_data(cls):
-        sales_data = cls.objects.values('created_at__month').annotate(total_sales=Sum('quantity')).order_by('created_at__month')
-        chart_labels = [data['created_at__month'] for data in sales_data]
-        chart_data = [data['total_sales'] for data in sales_data]
+        total_sales = cls.objects.aggregate(total_sales=Sum('quantity'))['total_sales']
+        product_sales = cls.objects.values('name').annotate(sales=Sum('quantity')).order_by('name')
 
-        return {
-            'labels': chart_labels,
-            'data': chart_data,
+        data = {
+            'labels': [sale['name'] for sale in product_sales],
+            'data': [sale['sales'] / total_sales * 100 for sale in product_sales],
         }
+    
+        return data
 
     @classmethod
     def get_stock_chart_data(cls):

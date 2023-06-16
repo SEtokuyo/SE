@@ -1,0 +1,37 @@
+<!-- report_m.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}報表{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>報表</h1>
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">客户名稱</th>
+                    <th scope="col">地址</th>
+                    <th scope="col">總金額</th>
+                    <th scope="col">創建時間</th>
+                    <th scope="col">更新時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.customer }}</td>
+                    <td>{{ order.shipping_address }}</td>
+                    <td>{{ order.total_amount }}</td>
+                    <td>{{ order.created_at }}</td>
+                    <td>{{ order.updated_at }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">暫無訂單數據</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
