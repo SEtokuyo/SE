@@ -55,15 +55,13 @@ class Product(models.Model):
 
     @classmethod
     def get_sales_chart_data(cls):
-<<<<<<< HEAD
         total_sales = cls.objects.aggregate(total_sales=Sum('quantity'))['total_sales']
         product_sales = cls.objects.values('name').annotate(sales=Sum('quantity')).order_by('name')
-=======
         sales_data = cls.objects.values('created_at__month').annotate(
             total_sales=Sum('quantity')).order_by('created_at__month')
         chart_labels = [data['created_at__month'] for data in sales_data]
         chart_data = [data['total_sales'] for data in sales_data]
->>>>>>> 9fa70137e36e58a931d4c61189477d683b7bcaf0
+
 
         data = {
             'labels': [sale['name'] for sale in product_sales],
@@ -103,19 +101,33 @@ class Customer(models.Model):
         return self.user.username
 
 
+class PaymentMethod(models.Model):
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
+    
+
+class Status(models.Model):
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
+
+
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     total_amount = models.DecimalField(max_digits=8, decimal_places=2)
     shipping_address = models.CharField(max_length=200)
     order_items = models.ManyToManyField(Product, through='OrderItem')
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Order #{self.pk}"
-
-    def __str__(self):
-        return f"Order ID: {self.id}, Customer: {self.customer}"
 
     def get_product_sales_percentage(self):
         product_sales = self.order_items_set.values('product__name').annotate(

@@ -39,7 +39,11 @@ class NotificationForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['customer', 'total_amount']
+        fields = ['customer', 'total_amount', 'shipping_address',
+                  'order_items', 'payment_method', 'status', 'notes']
+        widgets = {
+            'notes': forms.Textarea(attrs={'rows': 3}),
+        }
 
 
 class ProductForm(forms.ModelForm):

@@ -11,6 +11,8 @@ from .forms import ProfileForm, NotificationForm, RegistrationForm, OrderForm, P
 from datetime import datetime
 # Create your views here.
 
+
+@login_required
 def dashboard(request):
     return render(request, 'dashboard.html')
 
@@ -86,84 +88,48 @@ def signup_view(request):
         form = RegistrationForm()
         print(form.errors)
     return render(request, 'registration/signup.html', {'form': form})
-
-
-def create_order(request):
-    if request.method == 'POST':
-        customer_id = request.POST.get('customer')
-        total_amount = request.POST.get('total_amount')
-        product_ids = request.POST.getlist('products')
-
-        # 获取所选客户
-        customer = Customer.objects.get(id=customer_id)
-
-        # 创建订单
-        order = Order.objects.create(
-            customer=customer, total_amount=total_amount, shipping_address=customer.user.street)
-
-        # 添加订单商品项
-        for product_id in product_ids:
-            product = Product.objects.get(id=product_id)
-            quantity = request.POST.get(f'quantity_{product_id}')
-
-            # 计算单个商品价格
-            price = product.price * int(quantity)
-
-            # 创建订单商品项
-            OrderItem.objects.create(
-                order=order, product=product, quantity=quantity, price=price)
-
-        return redirect('order_list')
-
-    # 获取所有客户和商品
-    customers = Customer.objects.all()
-    products = Product.objects.all()
-
-    context = {
-        'customers': customers,
-        'products': products,
-    }
-
-    return render(request, 'create_order.html', context)
-
 @login_required
 def order_list(request):
     orders = Order.objects.all()
     return render(request, 'order_list.html', {'orders': orders})
 
-def order_detail(request, id):
-    order = get_object_or_404(Order, id=id)
+def order_detail(request, order_id):
+    order = Order.objects.get(id=order_id)
     return render(request, 'order_detail.html', {'order': order})
 
+def order_create(request):
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('order_list')
+    else:
+        form = OrderForm()
+    return render(request, 'order_create.html', {'form': form})
 
-def order_edit(request, id):
-    order = get_object_or_404(Order, id=id)
+def order_edit(request, order_id):
+    order = Order.objects.get(id=order_id)
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order)
         if form.is_valid():
             form.save()
-            return redirect('order_detail', id=order.id)
+            return redirect('order_list')
     else:
         form = OrderForm(instance=order)
     return render(request, 'order_edit.html', {'form': form, 'order': order})
 
-def order_delete(request, id):
-    order = get_object_or_404(Order, id=id)
-    if request.method == 'POST':
-        order.delete()
-        return redirect('order_list')
-    return render(request, 'order_delete.html', {'order': order})
-
-
+def order_delete(request, order_id):
+    order = Order.objects.get(id=order_id)
+    order.delete()
+    return redirect('order_list')
+@login_required
 def product_list(request):
     products = Product.objects.all()
     return render(request, 'product_list.html', {'products': products})
 
-
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     return render(request, 'product_detail.html', {'product': product})
-
 
 def product_create(request):
     if request.method == 'POST':
@@ -174,7 +140,6 @@ def product_create(request):
     else:
         form = ProductForm()
     return render(request, 'product_create.html', {'form': form})
-
 
 def product_edit(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -187,35 +152,20 @@ def product_edit(request, pk):
         form = ProductForm(instance=product)
     return render(request, 'product_edit.html', {'form': form, 'product': product})
 
-
 def product_delete(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
         product.delete()
         return redirect('product_list')
     return render(request, 'product_delete.html', {'product': product})
-
 @login_required
-def dashboard_view(request):
-    # 在這裡處理從後端獲取數據等相關邏輯
-    context = {
-        # 將需要傳遞到模板中的變數添加到context字典中
-        'total_sales': 10000,
-        'best_selling_product': 'Product A',
-        # 其他變數...
-    }
-    return render(request, 'dashboard.html', context)
-
-
 def customer_list(request):
     customers = Customer.objects.all()
     return render(request, 'customer_list.html', {'customers': customers})
 
-
 def customer_detail(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     return render(request, 'customer_detail.html', {'customer': customer})
-
 
 def customer_create(request):
     if request.method == 'POST':
@@ -227,7 +177,6 @@ def customer_create(request):
         form = CustomerForm()
     return render(request, 'customer_create.html', {'form': form})
 
-
 def customer_edit(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     if request.method == 'POST':
@@ -238,7 +187,6 @@ def customer_edit(request, customer_id):
     else:
         form = CustomerForm(instance=customer)
     return render(request, 'customer_edit.html', {'form': form})
-
 
 def customer_delete(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
@@ -259,7 +207,6 @@ def settings_view(request):
     }
 
     return render(request, 'settings.html', context)
-
 @login_required
 def update_profile(request):
     user = request.user
@@ -279,7 +226,6 @@ def update_profile(request):
     }
 
     return render(request, 'settings.html', context)
-
 @login_required
 def update_notification(request):
     user = request.user
@@ -298,10 +244,6 @@ def update_notification(request):
         'notification_form': notification_form,
     }
     return render(request, 'settings.html', context)
-
-def customer_view(request):
-    customers = Customer.objects.all()
-    return render(request, 'customer.html', {'customers': customers})
 
 def order_report(request):
     orders = Order.objects.all()
