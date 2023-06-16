@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h2 class="mb-4">產品列表</h2>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>產品名稱</th>
+          <th>價格</th>
+          <th>庫存</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.stock }}</td>
+            <td>
+              <a href="{% url 'product_detail' product.id %}" class="btn btn-primary btn-sm me-1">詳細資料</a>
+              <a href="{% url 'product_edit' product.id %}" class="btn btn-success btn-sm me-1">編輯</a>
+              <a href="{% url 'product_delete' product.id %}" class="btn btn-danger btn-sm">刪除</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="text-end">
+      <a href="{% url 'product_create' %}" class="btn btn-primary">新增產品</a>
+    </div>
+  </div>
+{% endblock %}

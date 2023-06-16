@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
-from .forms import ProfileForm, NotificationForm, RegistrationForm, OrderForm
+from .forms import ProfileForm, NotificationForm, RegistrationForm, OrderForm, ProductForm
 from datetime import datetime
 # Create your views here.
 
@@ -89,6 +89,45 @@ def signup_view(request):
         print(form.errors)
     return render(request, 'registration/signup.html', {'form': form})
 
+
+def create_order(request):
+    if request.method == 'POST':
+        customer_id = request.POST.get('customer')
+        total_amount = request.POST.get('total_amount')
+        product_ids = request.POST.getlist('products')
+
+        # 获取所选客户
+        customer = Customer.objects.get(id=customer_id)
+
+        # 创建订单
+        order = Order.objects.create(
+            customer=customer, total_amount=total_amount, shipping_address=customer.user.street)
+
+        # 添加订单商品项
+        for product_id in product_ids:
+            product = Product.objects.get(id=product_id)
+            quantity = request.POST.get(f'quantity_{product_id}')
+
+            # 计算单个商品价格
+            price = product.price * int(quantity)
+
+            # 创建订单商品项
+            OrderItem.objects.create(
+                order=order, product=product, quantity=quantity, price=price)
+
+        return redirect('order_list')
+
+    # 获取所有客户和商品
+    customers = Customer.objects.all()
+    products = Product.objects.all()
+
+    context = {
+        'customers': customers,
+        'products': products,
+    }
+
+    return render(request, 'create_order.html', context)
+
 @login_required
 def order_list(request):
     orders = Order.objects.all()
@@ -116,6 +155,47 @@ def order_delete(request, id):
         order.delete()
         return redirect('order_list')
     return render(request, 'order_delete.html', {'order': order})
+
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'product_list.html', {'products': products})
+
+
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'product_detail.html', {'product': product})
+
+
+def product_create(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('product_list')
+    else:
+        form = ProductForm()
+    return render(request, 'product_create.html', {'form': form})
+
+
+def product_edit(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('product_list')
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'product_edit.html', {'form': form, 'product': product})
+
+
+def product_delete(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('product_list')
+    return render(request, 'product_delete.html', {'product': product})
 
 @login_required
 def dashboard_view(request):

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>編輯產品</h2>
+
+  <form method="post" action="{% url 'product_edit' product.pk %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary">更新產品</button>
+  </form>
+
+  <a href="{% url 'product_list' %}" class="btn btn-secondary mt-3">返回產品列表</a>
+{% endblock %}
