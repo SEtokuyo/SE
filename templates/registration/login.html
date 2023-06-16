@@ -5,6 +5,11 @@
 {% block title %}登入 - 銷售管理系統{% endblock %}
 
 {% block content %}
+{% if message %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+{% endif %}
 <div class="row justify-content-center align-items-center mt-5">
   <div class="col-md-4 ">
     <div class="card shadow">

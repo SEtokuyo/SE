@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <h2>新增客戶</h2>
+
+  <form method="post" action="{% url 'customer_create' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">新增</button>
+  </form>
+</div>
+{% endblock %}

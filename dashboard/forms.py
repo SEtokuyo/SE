@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, Order, Product
+from .models import User, Order, Product,Customer
 
 class RegistrationForm(UserCreationForm):
     password1 = forms.CharField(label='密碼', widget=forms.PasswordInput)
@@ -54,4 +54,20 @@ class ProductForm(forms.ModelForm):
             'quantity': '數量',
             'stock': '庫存',
             'category': '分類',
+        }
+
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['name', 'contact_number', 'address', 'email', 'remarks']
+        labels = {
+            'name': '姓名',
+            'contact_number': '聯絡電話',
+            'address': '地址',
+            'email': '電子郵件',
+            'remarks': '備註',
+        }
+        widgets = {
+            'remarks': forms.Textarea(attrs={'rows': 3}),
         }

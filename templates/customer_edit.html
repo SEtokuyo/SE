@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <h2>編輯客戶</h2>
+
+  <form method="post" action="{% url 'customer_edit' customer.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">儲存</button>
+  </form>
+</div>
+{% endblock %}
