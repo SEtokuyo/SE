@@ -1,30 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>訂單列表</h2>
+  <div class="container">
+    <h2 class="mb-4">訂單列表</h2>
 
-  <table class="table">
-    <thead>
-      <tr>
-        <th>訂單編號</th>
-        <th>客戶名稱</th>
-        <th>總金額</th>
-        <th>操作</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for order in orders %}
+    <table class="table table-striped">
+      <thead>
         <tr>
-          <td>{{ order.pk }}</td>
-          <td>{{ order.customer }}</td>
-          <td>{{ order.total_amount }}</td>
-          <td>
-            <a href="{% url 'order_detail' order.pk %}" class="btn btn-primary">詳細資料</a>
-            <a href="{% url 'order_edit' order.pk %}" class="btn btn-success">編輯</a>
-            <a href="{% url 'order_delete' order.pk %}" class="btn btn-danger">刪除</a>
-          </td>
+          <th>訂單編號</th>
+          <th>客戶名稱</th>
+          <th>總金額</th>
+          <th>操作</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td>{{ order.pk }}</td>
+            <td>{{ order.customer }}</td>
+            <td>{{ order.total_amount }}</td>
+            <td>
+              <a href="{% url 'order_detail' order.pk %}" class="btn btn-primary btn-sm me-1">詳細資料</a>
+              <a href="{% url 'order_edit' order.pk %}" class="btn btn-success btn-sm me-1">編輯</a>
+              <a href="{% url 'order_delete' order.pk %}" class="btn btn-danger btn-sm">刪除</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="text-end">
+      <a href="{% url 'create_order' %}" class="btn btn-primary">新增訂單</a>
+    </div>
+  </div>
 {% endblock %}

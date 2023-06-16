@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>產品詳細資料</h2>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{ product.name }}</h5>
+      <p class="card-text">價格: {{ product.price }}</p>
+      <p class="card-text">庫存: {{ product.stock }}</p>
+      <p class="card-text">描述: {{ product.description }}</p>
+      <p class="card-text">分類: {{ product.category }}</p>
+      <p class="card-text">建立時間: {{ product.created_at }}</p>
+      <p class="card-text">更新時間: {{ product.updated_at }}</p>
+    </div>
+  </div>
+
+  <a href="{% url 'product_list' %}" class="btn btn-secondary mt-3">返回產品列表</a>
+{% endblock %}
