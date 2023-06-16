@@ -11,7 +11,7 @@
       <p class="card-text">送貨地址：{{ order.shipping_address }}</p>
       <p class="card-text">總金額：{{ order.total_amount }}</p>
 
-      <a href="{% url 'order_edit' order.id %}" class="btn btn-primary">編輯</a>
+      <a href="{% url 'order_edit' order.pk %}" class="btn btn-primary">編輯</a>
       <a href="{% url 'order_list' %}" class="btn btn-secondary">返回列表</a>
     </div>
   </div>

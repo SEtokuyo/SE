@@ -98,7 +98,7 @@ class Customer(models.Model):
     remarks = models.TextField()
 
     def __str__(self):
-        return self.user.username
+        return self.name
 
 
 class PaymentMethod(models.Model):
@@ -125,10 +125,10 @@ class Order(models.Model):
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     def __str__(self):
-        return f"Order #{self.pk}"
-
+        return self.name
+    
     def get_product_sales_percentage(self):
         product_sales = self.order_items_set.values('product__name').annotate(
             sales=Count('product')).order_by('product__name')
