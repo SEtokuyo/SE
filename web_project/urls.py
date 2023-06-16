@@ -20,6 +20,7 @@ from django.urls import path, include
 from django.views.generic.base import TemplateView
 from dashboard.views import dashboard , dashboard_view, signup_view,  settings_view, update_profile, update_notification, order_list, order_detail, order_edit, order_delete, sales_chart_data, stock_chart_data, sales_line_chart_data
 from dashboard import views
+from datetime import datetime
 
 urlpatterns = [
     path("admin/", admin.site.urls),
