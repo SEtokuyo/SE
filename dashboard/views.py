@@ -8,6 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
 from .forms import ProfileForm, NotificationForm, RegistrationForm, OrderForm, ProductForm
+from datetime import datetime
 # Create your views here.
 
 def dashboard(request):
@@ -33,6 +34,7 @@ def stock_chart_data(request):
 
 def sales_line_chart_data(request):
     # Retrieve the sales data from the database
+    from django.db import models
     products = Product.objects.all()
     sales_data = []
     labels = []
@@ -43,8 +45,12 @@ def sales_line_chart_data(request):
             total_sales=models.Sum(models.F('price') * models.F('quantity')))['total_sales']
         sales_data.append(month_sales if month_sales else 0)
         labels.append(datetime(2000, i, 1).strftime('%b'))
+    
+    # Return the sales data and labels
+    return JsonResponse({'labels': labels, 'data': sales_data})
 
 def sales_chart_data(request):
+    from django.db import models
     # 實現銷售圖表數據的邏輯
     # 從 Product 模型中獲取銷售數據
     sales_data = Product.get_sales_chart_data()
@@ -58,6 +64,7 @@ def sales_chart_data(request):
         "labels": labels,
         "data": data
     }
+    return JsonResponse(data)
 
 def signup_view(request):
     User = get_user_model()
